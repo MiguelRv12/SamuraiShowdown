@@ -2,10 +2,8 @@ import { Box, Flex, Text } from "@chakra-ui/react";
 import { useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import HeaderComponent from "./components/HeaderComponent";
-import MintNFTComponent from "./components/MintNftComponent";
-import ShowNFTsComponent from "./components/ShowNFTsComponent";
 import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./config";
+import AppRouter from './App.router';
 
 
 
@@ -35,9 +33,7 @@ function App() {
         </Flex>
       ) : (
         <>
-          <HeaderComponent />
-          <MintNFTComponent contract={contract} account={address} setNeedRefresh={setNeedRefresh} />
-          <ShowNFTsComponent contract={contract} account={address}/>
+          <AppRouter contract={contract} account={address} setNeedRefresh={setNeedRefresh} />
         </>
       )}
     </Box>
