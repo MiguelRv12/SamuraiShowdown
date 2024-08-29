@@ -1,24 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { useWeb3ModalAccount, useWeb3ModalProvider } from "@web3modal/ethers/react";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import HeaderComponent from "./components/HeaderComponent";
+import MintNFTComponent from "./components/MintNftComponent";
+import ShowNFTsComponent from "./components/ShowNFTsComponent";
+import { CONTRACT_ADDRESS, CONTRACT_ABI } from "./config";
+
+
 
 function App() {
+  const { address, isConnected } = useWeb3ModalAccount();
+  const { walletProvider } = useWeb3ModalProvider();
+  const [needRefresh, setNeedRefresh] = useState(true);
+  const [contract, setContract] = useState(null);
+
+  useEffect(() => {
+    const getBalance = async () => {
+      const provider = new ethers.BrowserProvider(walletProvider);
+      const signer = await provider.getSigner();
+      const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+      setContract(contractInstance);
+  
+      setNeedRefresh(false);
+    };
+    walletProvider && getBalance();
+  }, [address, walletProvider, needRefresh]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box w={"100vw"} h={"100vh"} bg={"gray.700"}>
+      {!isConnected ? (
+        <Flex w={"100vw"} h={"100vh"} alignItems={"center"} justifyContent={"center"}>
+          <w3m-button />
+        </Flex>
+      ) : (
+        <>
+          <HeaderComponent />
+          <MintNFTComponent contract={contract} account={address} setNeedRefresh={setNeedRefresh} />
+          <ShowNFTsComponent contract={contract} account={address}/>
+        </>
+      )}
+    </Box>
   );
 }
 
